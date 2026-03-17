@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>AirPulse | Архив данных</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f1f5f9; color: #1e293b; font-family: 'Inter', sans-serif; }
+        .table-card { background: white; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: none; overflow: hidden;}
+        .table thead { background: #1e293b; color: white; }
+        .badge-id { background: #e2e8f0; color: #475569; font-weight: bold; }
+        h1 { font-size: 2.2rem; }
+    </style>
+</head>
+<body class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="fw-bold mb-0">Архив измерений</h1>
+                <p class="text-muted mb-0">Полная история датчиков из SQLite</p>
+            </div>
+            <a href="/" class="btn btn-dark px-4">На Дашборд</a>
+        </div>
+
+        <div class="card table-card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 table-sm">
+                    <thead>
+                        <tr>
+                            <th class="ps-4 py-3">ID</th>
+                            <th>Время получения</th>
+                            <th>Устройство</th>
+                            <th>PM1.0</th> <th>PM2.5</th>
+                            <th>PM10</th>
+                            <th>Temp</th>
+                            <th>Hum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in readings %}
+                        <tr>
+                            <td class="ps-4"><span class="badge badge-id">{{ row['id'] }}</span></td>
+                            <td>{{ row['received_at'][:19].replace('T', ' ') }}</td>
+                            <td><code class="text-primary">{{ row['dev_eui'] }}</code></td>
+                            <td>
+                                {% if row['pm1'] != None %}
+                                    <strong>{{ row['pm1'] }}</strong> <small class="text-muted">µg</small>
+                                {% else %}
+                                    <span class="text-muted">--</span>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ row['pm25'] }}</strong> <small class="text-muted">µg</small></td>
+                            <td>{{ row['pm10'] }} <small class="text-muted">µg</small></td>
+                            <td><span class="text-danger">{{ row['temp'] }}°C</span></td>
+                            <td><span class="text-info">{{ row['hum'] }}%</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
