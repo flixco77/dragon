@@ -1,0 +1,8 @@
+# TTN / MQTT
+paho-mqtt==1.6.1
+
+# Работа с датой/временем
+python-dateutil==2.9.0
+
+# .env файл (опционально)
+python-dotenv==1.0.0

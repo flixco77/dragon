@@ -1,0 +1,50 @@
+# ───────────────────────────────────────────────
+#  docker-compose.yml
+#  LoRa → TTN (MQTT) → SQLite на Raspberry Pi
+# ───────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+
+  # ── Основное приложение ──────────────────────
+  ttn-collector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ttn-collector
+    restart: unless-stopped
+
+    # Переменные окружения — TTN credentials
+    # Можно вынести в файл .env
+    environment:
+      # TTN MQTT настройки
+      TTN_HOST: eu1.cloud.thethings.network       # регион: eu1 / nam1 / au1
+      TTN_PORT: 1883                               # 1883 = без TLS, 8883 = с TLS
+      TTN_APP_ID: your-app-id                      # App ID из TTN Console
+      TTN_API_KEY: your-api-key                    # API Key из TTN Console
+      TTN_DEVICE_ID: "+"                           # "+" = все устройства
+
+      # База данных
+      DB_PATH: /data/lora.db                       # путь внутри контейнера
+
+    volumes:
+      # SQLite файл живёт на Pi, не внутри контейнера
+      - lora-data:/data
+
+    # Нет открытых портов — только подписка на MQTT
+    # Если нужен HTTP API для чтения данных — раскомментируйте:
+    # ports:
+    #   - "8000:8000"
+
+    # Логи
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ── Хранилище данных ─────────────────────────
+volumes:
+  lora-data:
+    driver: local
